@@ -1,0 +1,18 @@
+{
+  "name": "vtc-kems-78",
+  "version": "1.0.0",
+  "description": "Site de réservation VTC KEMS 78 – Chauffeur Privé (Île-de-France)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --env-file=.env --watch server.js"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

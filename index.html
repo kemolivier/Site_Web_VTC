@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VTC KEMS 78 – Chauffeur Privé | Prix fixe en Île-de-France</title>
+  <meta name="description" content="Chauffeur privé VTC en Île-de-France : aéroports Orly et CDG, gares, trajets professionnels et événements. Prix fixe garanti 24h/24, sans majoration." />
+  <meta name="theme-color" content="#0b0f1a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== EN-TÊTE ========== -->
+  <header class="entete">
+    <div class="conteneur entete__barre">
+      <a href="#" class="logo" aria-label="Accueil VTC KEMS 78">
+        <span class="logo__marque">KEMS<span class="or">78</span></span>
+        <span class="logo__sous">Chauffeur Privé</span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#reserver">Réserver</a>
+        <a href="#services">Services</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="btn btn--contour btn--petit" data-lien="tel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+        <span data-texte="telephone"></span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ========== ACCUEIL + RÉSERVATION ========== -->
+    <section class="hero" id="reserver">
+      <div class="conteneur hero__grille">
+        <div class="hero__texte">
+          <p class="surtitre">VTC · Île-de-France · 24h/24</p>
+          <h1>Votre chauffeur privé,<br /><span class="or">au prix fixe garanti.</span></h1>
+          <p class="hero__intro">
+            Aéroports, gares, rendez-vous d'affaires ou événements : le prix est annoncé avant
+            de réserver et il ne bouge pas. Pas de majoration la nuit, le week-end ou aux heures de pointe.
+          </p>
+          <ul class="badges">
+            <li>✓ Sans majoration</li>
+            <li>✓ Orly &amp; CDG au forfait</li>
+            <li>✓ Paiement à bord</li>
+          </ul>
+        </div>
+
+        <!-- Carte de réservation -->
+        <div class="carte-resa" id="carte-resa">
+
+          <!-- Étape 1 : trajet -->
+          <form id="form-trajet" class="etape" autocomplete="off" novalidate>
+            <h2 class="carte-resa__titre">Estimez votre course</h2>
+
+            <div class="champ champ--adresse">
+              <label for="depart">Départ</label>
+              <div class="saisie">
+                <input id="depart" type="text" placeholder="Adresse, ville ou gare de départ" required />
+                <ul class="suggestions" id="suggestions-depart" role="listbox"></ul>
+              </div>
+              <div class="raccourcis">
+                <button type="button" class="puce" data-cible="depart" data-aeroport="orly">✈ Orly</button>
+                <button type="button" class="puce" data-cible="depart" data-aeroport="cdg">✈ CDG</button>
+              </div>
+            </div>
+
+            <button type="button" class="inverser" id="inverser" aria-label="Inverser départ et arrivée">⇅</button>
+
+            <div class="champ champ--adresse">
+              <label for="arrivee">Arrivée</label>
+              <div class="saisie">
+                <input id="arrivee" type="text" placeholder="Adresse, ville ou gare d'arrivée" required />
+                <ul class="suggestions" id="suggestions-arrivee" role="listbox"></ul>
+              </div>
+              <div class="raccourcis">
+                <button type="button" class="puce" data-cible="arrivee" data-aeroport="orly">✈ Orly</button>
+                <button type="button" class="puce" data-cible="arrivee" data-aeroport="cdg">✈ CDG</button>
+              </div>
+            </div>
+
+            <p class="message message--erreur" id="erreur-trajet" hidden></p>
+            <button type="submit" class="btn btn--or btn--large" id="btn-estimer">Calculer le prix</button>
+          </form>
+
+          <!-- Résultat de l'estimation -->
+          <div class="resultat" id="resultat" hidden>
+            <p class="resultat__label">Prix fixe garanti</p>
+            <p class="resultat__prix"><span id="res-prix"></span> €</p>
+            <p class="resultat__detail" id="res-detail"></p>
+            <p class="resultat__trajet" id="res-trajet"></p>
+          </div>
+
+          <!-- Étape 2 : réservation -->
+          <form id="form-resa" class="etape" hidden novalidate>
+            <h2 class="carte-resa__titre">Vos informations</h2>
+            <div class="grille-2">
+              <div class="champ">
+                <label for="date">Date</label>
+                <input id="date" type="date" required />
+              </div>
+              <div class="champ">
+                <label for="heure">Heure de prise en charge</label>
+                <input id="heure" type="time" required />
+              </div>
+              <div class="champ">
+                <label for="passagers">Passagers</label>
+                <select id="passagers"></select>
+              </div>
+              <div class="champ">
+                <label for="bagages">Bagages</label>
+                <select id="bagages"></select>
+              </div>
+            </div>
+            <div class="champ">
+              <label for="nom">Nom et prénom</label>
+              <input id="nom" type="text" autocomplete="name" required />
+            </div>
+            <div class="grille-2">
+              <div class="champ">
+                <label for="telephone">Téléphone</label>
+                <input id="telephone" type="tel" autocomplete="tel" placeholder="06 12 34 56 78" required />
+              </div>
+              <div class="champ">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" autocomplete="email" placeholder="vous@exemple.fr" required />
+              </div>
+            </div>
+            <div class="champ">
+              <label for="commentaire">Commentaire <span class="facultatif">(facultatif)</span></label>
+              <textarea id="commentaire" rows="2" placeholder="N° de vol ou de train, siège enfant, société à facturer…"></textarea>
+            </div>
+            <!-- Champ piège anti-robots (invisible pour les humains) -->
+            <input type="text" id="siteweb" name="siteweb" class="piege" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+            <p class="message message--erreur" id="erreur-resa" hidden></p>
+            <button type="submit" class="btn btn--or btn--large" id="btn-reserver">Réserver ma course</button>
+            <p class="mention-rgpd">
+              Vos coordonnées servent uniquement à traiter votre réservation.
+              <a href="mentions-legales.html#confidentialite">En savoir plus</a>
+            </p>
+            <button type="button" class="lien-retour" id="modifier-trajet">← Modifier le trajet</button>
+          </form>
+
+          <!-- Étape 3 : confirmation -->
+          <div class="confirmation" id="confirmation" hidden>
+            <div class="confirmation__icone">✓</div>
+            <h2 class="carte-resa__titre">Demande envoyée !</h2>
+            <p>Référence : <strong id="conf-ref"></strong></p>
+            <p id="conf-texte"></p>
+            <a class="btn btn--whatsapp btn--large" id="conf-whatsapp" target="_blank" rel="noopener">
+              Envoyer aussi sur WhatsApp
+            </a>
+            <button type="button" class="lien-retour" id="nouvelle-resa">Faire une nouvelle réservation</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== ATOUTS ========== -->
+    <section class="section">
+      <div class="conteneur">
+        <p class="surtitre">Pourquoi réserver en direct</p>
+        <h2 class="titre-section">Le confort d'un chauffeur privé, sans les mauvaises surprises</h2>
+        <div class="grille-cartes">
+          <article class="carte">
+            <span class="carte__icone">€</span>
+            <h3>Prix fixe garanti</h3>
+            <p>Le prix affiché est le prix payé. Aucune majoration dynamique, même à 5 h du matin ou un soir de pluie.</p>
+          </article>
+          <article class="carte">
+            <span class="carte__icone">⏱</span>
+            <h3>Ponctualité</h3>
+            <p>Indiquez votre numéro de vol ou de train : l'heure de prise en charge est adaptée à votre arrivée.</p>
+          </article>
+          <article class="carte">
+            <span class="carte__icone">☎</span>
+            <h3>Un interlocuteur unique</h3>
+            <p>Vous réservez directement auprès de votre chauffeur, joignable par téléphone et WhatsApp.</p>
+          </article>
+          <article class="carte">
+            <span class="carte__icone">◈</span>
+            <h3>Paiement flexible</h3>
+            <p data-texte="paiements"></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SERVICES ========== -->
+    <section class="section section--sombre" id="services">
+      <div class="conteneur">
+        <p class="surtitre">Services</p>
+        <h2 class="titre-section">Pour tous vos déplacements</h2>
+        <div class="grille-services">
+          <article class="service">
+            <h3>Aéroports &amp; gares</h3>
+            <p>Transferts vers et depuis Orly, Roissy-CDG, Beauvais et toutes les gares parisiennes. Forfaits fixes pour Orly et CDG.</p>
+          </article>
+          <article class="service">
+            <h3>Professionnels</h3>
+            <p>Rendez-vous d'affaires, séminaires, accueil de clients. Paiement par virement et facture sur demande.</p>
+          </article>
+          <article class="service">
+            <h3>Événements</h3>
+            <p>Mariages, soirées, concerts, sorties : arrivez détendu et rentrez en toute sécurité.</p>
+          </article>
+          <article class="service">
+            <h3>Longues distances</h3>
+            <p>Partout en Île-de-France et au-delà, au tarif kilométrique annoncé à l'avance.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TARIFS ========== -->
+    <section class="section" id="tarifs">
+      <div class="conteneur">
+        <p class="surtitre">Tarifs</p>
+        <h2 class="titre-section">Des prix transparents</h2>
+        <div class="tarifs">
+          <div class="tableau-conteneur">
+            <table class="tableau">
+              <caption>Forfaits aéroports (aller ou retour, jusqu'à 4 passagers)</caption>
+              <thead>
+                <tr><th scope="col">Départ / arrivée</th><th scope="col">Orly</th><th scope="col">CDG</th></tr>
+              </thead>
+              <tbody id="tableau-forfaits"></tbody>
+            </table>
+          </div>
+          <div class="tarif-km">
+            <h3>Autres trajets</h3>
+            <p class="tarif-km__formule" id="formule-km"></p>
+            <p id="minimum-km"></p>
+            <p>Tarif identique jour, nuit, week-end et jours fériés.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== VÉHICULE & CONTACT ========== -->
+    <section class="section section--sombre" id="contact">
+      <div class="conteneur contact">
+        <div>
+          <p class="surtitre">Votre véhicule</p>
+          <h2 class="titre-section" data-texte="vehicule"></h2>
+          <p>
+            Une berline hybride silencieuse et confortable, entretenue avec soin.
+            Jusqu'à <span data-texte="passagersMax"></span> passagers et <span data-texte="bagagesMax"></span> bagages.
+          </p>
+        </div>
+        <div class="contact__carte">
+          <h3>Une question ? Une course à réserver tout de suite ?</h3>
+          <a class="btn btn--or btn--large" data-lien="tel">Appeler le <span data-texte="telephone"></span></a>
+          <a class="btn btn--whatsapp btn--large" data-lien="whatsapp" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+          <a class="contact__mail" data-lien="mail"><span data-texte="email"></span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied">
+    <div class="conteneur">
+      <p>© <span id="annee"></span> VTC KEMS 78 – Chauffeur Privé · Île-de-France</p>
+      <p class="pied__petit">SIRET 953 669 520 00017 · Registre VTC EVTC078230389</p>
+      <p class="pied__petit">
+        <a href="mentions-legales.html">Mentions légales</a> ·
+        <a href="mentions-legales.html#confidentialite">Confidentialité</a> ·
+        Adresses : BAN (IGN) · Itinéraires : © contributeurs OpenStreetMap
+      </p>
+    </div>
+  </footer>
+
+  <!-- Bouton WhatsApp flottant -->
+  <a class="whatsapp-flottant" data-lien="whatsapp" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.28-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07a8.1 8.1 0 0 1-2.4-1.48 9 9 0 0 1-1.65-2.06c-.17-.3 0-.46.13-.6.13-.14.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5h-.57a1.1 1.1 0 0 0-.8.37 3.35 3.35 0 0 0-1.04 2.5c0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.08 4.5.7.3 1.26.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12 2a10 10 0 0 0-8.6 15.1L2 22l5.05-1.33A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.15l-.3-.18-3 .78.8-2.92-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>

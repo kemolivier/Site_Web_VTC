@@ -1,0 +1,377 @@
+/* =============================================================
+   VTC KEMS 78 – Style premium : bleu nuit, noir et or
+   ============================================================= */
+
+:root {
+  --nuit: #0b0f1a;
+  --nuit-2: #111827;
+  --nuit-3: #1a2233;
+  --ligne: rgba(201, 164, 92, 0.22);
+  --or: #c9a45c;
+  --or-clair: #e2c78f;
+  --texte: #f3efe6;
+  --texte-doux: #a9acb6;
+  --erreur: #f08a7e;
+  --whatsapp: #25d366;
+  --rayon: 14px;
+  --ombre: 0 20px 50px rgba(0, 0, 0, 0.45);
+  --titre: 'Playfair Display', Georgia, serif;
+  --corps: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+[hidden] { display: none !important; }
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+/* Évite que l'en-tête fixe cache le haut des sections lors du défilement */
+[id] { scroll-margin-top: 84px; }
+
+body {
+  margin: 0;
+  font-family: var(--corps);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--texte);
+  background: var(--nuit);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: var(--titre); line-height: 1.2; margin: 0 0 0.6em; }
+p { margin: 0 0 1em; }
+a { color: inherit; }
+.or { color: var(--or); }
+
+.conteneur { width: min(1140px, 100% - 2.5rem); margin-inline: auto; }
+
+/* ---------- Boutons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font: 600 0.95rem var(--corps);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+.btn svg { width: 1.1em; height: 1.1em; fill: currentColor; }
+.btn--or {
+  background: linear-gradient(135deg, var(--or-clair), var(--or));
+  color: #1a1408;
+  box-shadow: 0 8px 24px rgba(201, 164, 92, 0.25);
+}
+.btn--contour { border-color: var(--or); color: var(--or-clair); background: transparent; }
+.btn--contour:hover { background: rgba(201, 164, 92, 0.1); }
+.btn--whatsapp { background: var(--whatsapp); color: #06301a; }
+.btn--petit { padding: 0.55rem 1rem; font-size: 0.88rem; }
+.btn--large { width: 100%; padding: 1rem 1.4rem; font-size: 1rem; }
+
+/* ---------- En-tête ---------- */
+.entete {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11, 15, 26, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ligne);
+}
+.entete__barre { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.8rem 0; }
+.logo { text-decoration: none; display: flex; flex-direction: column; line-height: 1.05; }
+.logo__marque { font-family: var(--titre); font-size: 1.5rem; font-weight: 700; letter-spacing: 0.04em; }
+.logo__sous { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.25em; color: var(--texte-doux); }
+.nav { display: none; gap: 1.8rem; }
+.nav a { text-decoration: none; color: var(--texte-doux); font-size: 0.93rem; transition: color 0.2s; }
+.nav a:hover { color: var(--or-clair); }
+
+/* ---------- Hero + réservation ---------- */
+.hero {
+  padding: 2.5rem 0 3.5rem;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(201, 164, 92, 0.16), transparent 60%),
+    radial-gradient(700px 500px at -10% 110%, rgba(40, 70, 140, 0.25), transparent 60%),
+    var(--nuit);
+}
+.hero__grille { display: grid; gap: 2.2rem; align-items: start; }
+.surtitre {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.8rem;
+}
+.hero h1 { font-size: clamp(2rem, 6vw, 3.3rem); }
+.hero__intro { color: var(--texte-doux); font-size: 1.05rem; max-width: 34rem; }
+.badges { list-style: none; padding: 0; margin: 1.4rem 0 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.badges li {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ligne);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--or-clair);
+  background: rgba(201, 164, 92, 0.06);
+}
+
+.carte-resa {
+  background: linear-gradient(180deg, var(--nuit-3), var(--nuit-2));
+  border: 1px solid var(--ligne);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--ombre);
+}
+.carte-resa__titre { font-size: 1.35rem; margin-bottom: 1.1rem; }
+
+/* ---------- Champs ---------- */
+.champ { position: relative; margin-bottom: 0.9rem; }
+.champ label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--texte-doux); margin-bottom: 0.35rem; }
+.facultatif { opacity: 0.7; font-weight: 400; }
+.champ input,
+.champ select,
+.champ textarea {
+  width: 100%;
+  padding: 0.8rem 0.95rem;
+  font: 400 1rem var(--corps); /* 16px minimum : évite le zoom auto sur iPhone */
+  color: var(--texte);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  color-scheme: dark;
+}
+.champ textarea { resize: vertical; }
+.champ select option { background: var(--nuit-2); }
+.champ input:focus,
+.champ select:focus,
+.champ textarea:focus { border-color: var(--or); background: rgba(201, 164, 92, 0.05); }
+.champ input.invalide { border-color: var(--erreur); }
+.champ input.valide { border-color: rgba(201, 164, 92, 0.55); }
+.grille-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.8rem; }
+
+.raccourcis { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.puce {
+  font: 500 0.8rem var(--corps);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--ligne);
+  background: transparent;
+  color: var(--or-clair);
+  cursor: pointer;
+}
+.puce:hover { background: rgba(201, 164, 92, 0.12); }
+
+.inverser {
+  display: block;
+  margin: -0.3rem 0 0.3rem auto;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--ligne);
+  background: var(--nuit-2);
+  color: var(--or);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* Liste d'autocomplétion */
+.saisie { position: relative; }
+.suggestions {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  background: var(--nuit-2);
+  border: 1px solid var(--ligne);
+  border-radius: 10px;
+  box-shadow: var(--ombre);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.suggestions:empty { display: none; }
+.suggestions li { padding: 0.6rem 0.75rem; border-radius: 7px; cursor: pointer; font-size: 0.93rem; }
+.suggestions li small { display: block; color: var(--texte-doux); font-size: 0.78rem; }
+.suggestions li:hover,
+.suggestions li.actif { background: rgba(201, 164, 92, 0.14); }
+
+.piege { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.message { font-size: 0.9rem; border-radius: 8px; padding: 0.6rem 0.8rem; }
+.message--erreur { color: var(--erreur); background: rgba(240, 138, 126, 0.08); border: 1px solid rgba(240, 138, 126, 0.3); }
+
+/* Résultat du prix */
+.resultat {
+  text-align: center;
+  margin: 1.2rem 0;
+  padding: 1.1rem;
+  border-radius: var(--rayon);
+  border: 1px solid var(--or);
+  background: rgba(201, 164, 92, 0.07);
+}
+.resultat__label { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--or); margin: 0; }
+.resultat__prix { font-family: var(--titre); font-size: 3rem; font-weight: 700; margin: 0.1rem 0; color: var(--or-clair); }
+.resultat__detail,
+.resultat__trajet { font-size: 0.88rem; color: var(--texte-doux); margin: 0; }
+
+.lien-retour {
+  display: block;
+  margin: 0.9rem auto 0;
+  background: none;
+  border: none;
+  color: var(--texte-doux);
+  font: 500 0.9rem var(--corps);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lien-retour:hover { color: var(--or-clair); }
+
+/* Confirmation */
+.confirmation { text-align: center; }
+.confirmation p { color: var(--texte-doux); }
+.confirmation strong { color: var(--or-clair); letter-spacing: 0.05em; }
+.confirmation__icone {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  color: #1a1408;
+  background: linear-gradient(135deg, var(--or-clair), var(--or));
+}
+
+/* ---------- Sections ---------- */
+.section { padding: 4rem 0; }
+.section--sombre { background: var(--nuit-2); border-block: 1px solid var(--ligne); }
+.titre-section { font-size: clamp(1.6rem, 4vw, 2.3rem); max-width: 40rem; margin-bottom: 2rem; }
+
+.grille-cartes,
+.grille-services { display: grid; gap: 1rem; }
+.carte,
+.service {
+  padding: 1.5rem;
+  border-radius: var(--rayon);
+  border: 1px solid var(--ligne);
+  background: rgba(255, 255, 255, 0.02);
+}
+.carte h3,
+.service h3 { font-size: 1.15rem; }
+.carte p,
+.service p { color: var(--texte-doux); margin: 0; font-size: 0.95rem; }
+.carte__icone {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-bottom: 0.9rem;
+  border-radius: 10px;
+  color: var(--or);
+  border: 1px solid var(--ligne);
+  font-size: 1.2rem;
+}
+.service { border-left: 3px solid var(--or); }
+
+/* ---------- Tarifs ---------- */
+.tarifs { display: grid; gap: 1.5rem; }
+.tableau-conteneur { overflow-x: auto; border: 1px solid var(--ligne); border-radius: var(--rayon); }
+.tableau { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.tableau caption { text-align: left; padding: 1rem 1.1rem; color: var(--texte-doux); font-size: 0.88rem; }
+.tableau th,
+.tableau td { padding: 0.75rem 1.1rem; text-align: left; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.tableau thead th { color: var(--or); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.tableau td:not(:first-child),
+.tableau th:not(:first-child) { text-align: right; white-space: nowrap; }
+.tableau td:not(:first-child) { font-weight: 600; color: var(--or-clair); }
+.tableau tbody tr:hover { background: rgba(201, 164, 92, 0.05); }
+.tarif-km { padding: 1.5rem; border-radius: var(--rayon); border: 1px solid var(--ligne); background: rgba(201, 164, 92, 0.05); }
+.tarif-km p { color: var(--texte-doux); }
+.tarif-km__formule { font-family: var(--titre); font-size: 1.4rem; color: var(--or-clair) !important; }
+
+/* ---------- Contact ---------- */
+.contact { display: grid; gap: 2rem; align-items: center; }
+.contact p { color: var(--texte-doux); }
+.contact__carte {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1.6rem;
+  border: 1px solid var(--ligne);
+  border-radius: 20px;
+  background: var(--nuit);
+}
+.contact__carte h3 { font-size: 1.2rem; }
+.contact__mail { text-align: center; color: var(--texte-doux); font-size: 0.93rem; }
+
+/* ---------- Pied de page ---------- */
+.pied { padding: 2rem 0 5.5rem; text-align: center; color: var(--texte-doux); font-size: 0.88rem; }
+.pied p { margin: 0.2rem 0; }
+.pied__petit { font-size: 0.75rem; opacity: 0.7; }
+
+.pied__petit a { color: inherit; }
+
+/* ---------- Mention RGPD du formulaire ---------- */
+.mention-rgpd { margin: 0.7rem 0 0; font-size: 0.78rem; color: var(--texte-doux); text-align: center; }
+.mention-rgpd a { color: var(--or-clair); }
+
+/* ---------- Page mentions légales ---------- */
+.legal { max-width: 46rem; }
+.legal h1 { margin-bottom: 1.5rem; }
+.legal h2 { font-size: 1.2rem; color: var(--or-clair); margin: 2rem 0 0.6rem; }
+.legal p,
+.legal li { color: var(--texte-doux); }
+.legal strong { color: var(--texte); }
+.legal a { color: var(--or-clair); }
+.legal ul { padding-left: 1.2rem; }
+.legal li { margin-bottom: 0.4rem; }
+.legal__titre2 { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--ligne); }
+.legal__maj { margin-top: 2.5rem; font-size: 0.85rem; opacity: 0.8; }
+
+/* ---------- WhatsApp flottant ---------- */
+.whatsapp-flottant {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 60;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--whatsapp);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s;
+}
+.whatsapp-flottant:hover { transform: scale(1.06); }
+.whatsapp-flottant svg { width: 1.9rem; height: 1.9rem; fill: #fff; }
+
+/* ---------- Écrans plus larges ---------- */
+@media (max-width: 420px) {
+  .entete .btn span { display: none; } /* garde seulement l'icône téléphone */
+  .grille-2 { grid-template-columns: 1fr; }
+}
+@media (min-width: 720px) {
+  .grille-cartes { grid-template-columns: repeat(2, 1fr); }
+  .grille-services { grid-template-columns: repeat(2, 1fr); }
+  .carte-resa { padding: 2rem; }
+}
+@media (min-width: 960px) {
+  .nav { display: flex; }
+  .hero { padding: 4.5rem 0 5rem; }
+  .hero__grille { grid-template-columns: 1.05fr 0.95fr; gap: 3.5rem; }
+  .hero__texte { padding-top: 2.5rem; }
+  .grille-cartes { grid-template-columns: repeat(4, 1fr); }
+  .tarifs { grid-template-columns: 1.6fr 1fr; align-items: start; }
+  .contact { grid-template-columns: 1.2fr 1fr; }
+}
