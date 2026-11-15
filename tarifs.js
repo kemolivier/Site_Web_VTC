@@ -1,8 +1,8 @@
 // =============================================================
 //  TARIFS ET INFORMATIONS DE L'ENTREPRISE
 //  C'est le seul fichier à modifier pour changer vos prix.
-//  Après modification : enregistrez, poussez sur GitHub,
-//  Render redéploie automatiquement le site.
+//  Après modification : enregistrez, puis redéployez le site
+//  (import du zip ou push GitHub selon votre hébergement).
 // =============================================================
 
 module.exports = {
@@ -17,7 +17,29 @@ module.exports = {
     passagersMax: 4,
     bagagesMax: 4,
     paiements: ['Carte bancaire', 'Espèces', 'Virement (professionnels)'],
+    adresse: '24 rue de Migneaux, 78300 Poissy', // affichée dans le pied de page
+    ville: 'Poissy',
+    // Adresse publique du site (sans / final). Sert au référencement
+    // (sitemap, balises de partage). À adapter à votre nom de domaine.
+    siteUrl: 'https://vtckems78.fr',
+    // Lien vers votre fiche Google (bouton "Voir tous les avis").
+    // Laissez vide si vous n'en avez pas encore.
+    lienAvisGoogle: '',
   },
+
+  // Photos du site, à placer dans le dossier public/images/
+  // Laissez une valeur vide pour masquer l'emplacement.
+  photos: {
+    vehicule: 'images/vehicule.jpg', // votre Toyota Prius (extérieur)
+    interieur: 'images/interieur.jpg', // l'habitacle
+    chauffeur: 'images/chauffeur.jpg', // vous, en tenue
+  },
+
+  // Avis clients : uniquement de VRAIS avis, avec l'accord du client.
+  // note : de 1 à 5. Ajoutez-en autant que vous voulez.
+  avis: [
+    // { nom: 'Prénom N.', note: 5, date: '2026-10', texte: 'Ponctuel, voiture impeccable…', trajet: 'Poissy → CDG' },
+  ],
 
   // Calcul au kilomètre (tous les trajets hors forfait)
   kilometre: {

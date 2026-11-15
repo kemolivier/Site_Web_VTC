@@ -12,10 +12,61 @@ const tarifs = require('./tarifs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Render place le site derrière un proxy : nécessaire pour connaître la vraie IP du visiteur
+// L'hébergeur place le site derrière un proxy : nécessaire pour connaître la vraie IP du visiteur
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+// En-têtes de sécurité (envoyés avec chaque réponse)
+app.use((req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data:",
+      "connect-src 'self' https://data.geopf.fr",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
+  });
+  next();
+});
+
 app.use(express.json({ limit: '20kb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Fichiers du site, mis en cache par le navigateur
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    extensions: ['html'], // permet /mentions-legales sans .html
+    setHeaders(res, fichier) {
+      const longue = /\.(css|js|png|jpe?g|webp|svg|ico|woff2?)$/i.test(fichier);
+      res.set('Cache-Control', longue ? 'public, max-age=86400' : 'no-cache');
+    },
+  })
+);
+
+// Fichiers pour les moteurs de recherche
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(`User-agent: *\nAllow: /\nSitemap: ${tarifs.entreprise.siteUrl}/sitemap.xml\n`);
+});
+app.get('/sitemap.xml', (req, res) => {
+  const url = tarifs.entreprise.siteUrl;
+  const jour = new Date().toISOString().slice(0, 10);
+  res.type('application/xml').send(
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+      `  <url><loc>${url}/</loc><lastmod>${jour}</lastmod><priority>1.0</priority></url>\n` +
+      `  <url><loc>${url}/mentions-legales</loc><lastmod>${jour}</lastmod><priority>0.2</priority></url>\n` +
+      `</urlset>\n`
+  );
+});
 
 // -------------------------------------------------------------
 //  Outils de calcul
@@ -185,6 +236,8 @@ app.get('/api/infos', (req, res) => {
     kilometre: tarifs.kilometre,
     forfaits: tarifs.forfaits,
     aeroports: tarifs.aeroports,
+    photos: tarifs.photos,
+    avis: tarifs.avis,
   });
 });
 

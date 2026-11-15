@@ -11,7 +11,9 @@ vtc-kems-78/
 ├── tarifs.js         → VOS TARIFS ET COORDONNÉES (le seul fichier à modifier)
 ├── .env.example      → modèle des réglages secrets
 └── public/
-    ├── index.html    → la page du site
+    ├── index.html    → la page du site (réservation, tarifs, avis, FAQ, contact)
+    ├── favicon.svg   → l'icône du site
+    ├── images/       → vos photos (voir section 5)
     ├── mentions-legales.html → mentions légales et politique de confidentialité
     ├── style.css     → le design (noir, bleu nuit, or)
     └── script.js     → autocomplétion des adresses, estimation, formulaire
@@ -53,7 +55,11 @@ git push -u origin main
 
 Le fichier `.env` n'est **jamais** envoyé sur GitHub (il est exclu par `.gitignore`).
 
-## 4. Mettre le site en ligne avec Render
+## 4. Mettre le site en ligne (Hostinger ou Render)
+
+**Hostinger (offre Business/Unlimited ou Cloud)** : hPanel → Sites web → Ajouter un site web → *Node.js web app* → importez le zip du projet (ou reliez GitHub). Build `npm install`, démarrage `npm start`, puis ajoutez les variables d'environnement `BREVO_API_KEY`, `MAIL_FROM`, `MAIL_TO`. Le certificat SSL (HTTPS) est fourni automatiquement.
+
+**Render (gratuit)**
 
 1. Créez un compte sur https://render.com avec votre compte GitHub.
 2. **New → Web Service** → choisissez le dépôt `vtc-kems-78`.
@@ -68,7 +74,24 @@ Chaque `git push` sur GitHub redéploie automatiquement le site.
 
 **Bon à savoir sur l'offre gratuite** : le site se met en veille après une période sans visite, et le visiteur suivant attend alors environ 30 secondes. L'offre payante (Starter) supprime cette attente.
 
-## 5. Modifier vos tarifs
+## 5. Ajouter vos photos et vos avis clients
+
+**Photos** : déposez trois images JPG dans `public/images/` avec exactement ces noms :
+`vehicule.jpg` (votre Prius, vue extérieure), `interieur.jpg` (l'habitacle) et `chauffeur.jpg` (vous, en tenue).
+Format conseillé : 1200 × 900 pixels, moins de 300 Ko chacune (compressez-les sur squoosh.app).
+Tant qu'une photo manque, son emplacement est simplement masqué.
+
+**Avis clients** : dans `tarifs.js`, section `avis`, ajoutez une ligne par avis, **uniquement de vrais avis** et avec l'accord du client :
+
+```js
+{ nom: 'Sophie M.', note: 5, date: '2026-10', texte: 'Ponctuel, voiture impeccable.', trajet: 'Poissy → CDG' },
+```
+
+Si vous avez une fiche Google Business Profile, collez son lien d'avis dans `lienAvisGoogle` : un bouton « Laisser un avis sur Google » apparaîtra.
+
+**Nom de domaine** : dans `tarifs.js`, mettez votre vraie adresse dans `siteUrl` (par exemple `https://vtckems78.fr`), puis remplacez `https://vtckems78.fr` par la même adresse dans `public/index.html` (balises `canonical`, `og:` et données structurées). Ces adresses servent au référencement Google.
+
+## 6. Modifier vos tarifs
 
 Ouvrez `tarifs.js`, changez les montants, puis :
 

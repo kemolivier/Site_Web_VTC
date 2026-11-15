@@ -10,22 +10,33 @@ const points = { depart: null, arrivee: null }; // adresses choisies
 
 const $ = (id) => document.getElementById(id);
 
+// Lit une réponse JSON du serveur. Si on reçoit du HTML à la place,
+// c'est que le serveur Node n'est pas lancé (ou que le site est hébergé en "statique").
+async function lireJSON(rep) {
+  const type = rep.headers.get('content-type') || '';
+  if (!type.includes('application/json')) {
+    throw new Error('Le serveur du site ne répond pas : le site doit être déployé comme application Node.js (voir le README), pas comme de simples fichiers.');
+  }
+  return rep.json();
+}
+
 // -------------------------------------------------------------
 //  1. Chargement des informations (tarifs, téléphone…)
 // -------------------------------------------------------------
 async function chargerInfos() {
   const rep = await fetch('/api/infos');
-  infos = await rep.json();
+  infos = await lireJSON(rep);
   const e = infos.entreprise;
 
   // Textes dynamiques
   const textes = {
     telephone: e.telephone,
     email: e.email,
+    adresse: e.adresse,
     vehicule: e.vehicule,
     passagersMax: e.passagersMax,
     bagagesMax: e.bagagesMax,
-    paiements: e.paiements.join(', ') + '. Facture disponible sur demande.',
+    paiements: e.paiements.join(', ').toLowerCase(),
   };
   document.querySelectorAll('[data-texte]').forEach((el) => {
     el.textContent = textes[el.dataset.texte];
@@ -35,6 +46,7 @@ async function chargerInfos() {
   const liens = {
     tel: `tel:${e.telephoneLien}`,
     whatsapp: `https://wa.me/${e.whatsapp}?text=${encodeURIComponent('Bonjour, je souhaite réserver une course.')}`,
+    'whatsapp-avis': `https://wa.me/${e.whatsapp}?text=${encodeURIComponent('Bonjour, voici mon avis sur ma course : ')}`,
     mail: `mailto:${e.email}`,
   };
   document.querySelectorAll('[data-lien]').forEach((el) => {
@@ -53,6 +65,72 @@ async function chargerInfos() {
   const k = infos.kilometre;
   $('formule-km').textContent = `${k.priseEnCharge} € + ${formatEuro(k.prixParKm)} / km`;
   $('minimum-km').textContent = `Course minimum : ${k.minimum} €.`;
+
+  afficherAvis(infos.avis || [], e.lienAvisGoogle);
+  afficherPhotos(infos.photos || {});
+}
+
+// Avis clients (uniquement ceux saisis dans tarifs.js)
+function afficherAvis(avis, lienGoogle) {
+  const liste = $('liste-avis');
+  liste.innerHTML = '';
+  avis.forEach((a) => {
+    const note = Math.max(1, Math.min(5, Math.round(a.note || 5)));
+    const carte = document.createElement('article');
+    carte.className = 'avis-carte';
+    carte.innerHTML =
+      `<div class="avis-carte__etoiles" aria-label="${note} sur 5">${'★'.repeat(note)}${'☆'.repeat(5 - note)}</div>` +
+      `<p class="avis-carte__texte">${echapper(a.texte)}</p>` +
+      `<p class="avis-carte__auteur"><strong>${echapper(a.nom)}</strong>` +
+      (a.trajet ? ` · ${echapper(a.trajet)}` : '') +
+      (a.date ? ` · ${echapper(formatMois(a.date))}` : '') +
+      '</p>';
+    liste.appendChild(carte);
+  });
+  if (lienGoogle) {
+    const lien = $('lien-avis-google');
+    lien.href = lienGoogle;
+    lien.hidden = false;
+  }
+}
+
+// "2026-10" -> "octobre 2026"
+function formatMois(aaaaMM) {
+  const [a, m] = String(aaaaMM).split('-');
+  if (!a || !m) return aaaaMM;
+  return new Date(Number(a), Number(m) - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+}
+
+// Photos : affiche celles qui existent, masque les autres
+function afficherPhotos(photos) {
+  document.querySelectorAll('[data-photo]').forEach((fig) => {
+    const src = photos[fig.dataset.photo];
+    const img = fig.querySelector('img');
+    if (!src) return fig.remove();
+    img.addEventListener('error', () => fig.remove(), { once: true });
+    img.src = src;
+  });
+}
+
+// Menu mobile
+function brancherMenu() {
+  const burger = $('burger');
+  const nav = $('nav');
+  const fermer = () => {
+    nav.classList.remove('ouvert');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Ouvrir le menu');
+  };
+  burger.addEventListener('click', () => {
+    const ouvert = nav.classList.toggle('ouvert');
+    burger.setAttribute('aria-expanded', String(ouvert));
+    burger.setAttribute('aria-label', ouvert ? 'Fermer le menu' : 'Ouvrir le menu');
+  });
+  nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', fermer));
+  document.addEventListener('keydown', (ev) => ev.key === 'Escape' && fermer());
+  document.addEventListener('click', (ev) => {
+    if (!nav.contains(ev.target) && !burger.contains(ev.target)) fermer();
+  });
 }
 
 function remplirSelect(select, min, max, defaut) {
@@ -94,7 +172,7 @@ function brancherAutocompletion(cle) {
     const url = `${API_ADRESSE}?q=${encodeURIComponent(q)}&limit=6&lat=48.85&lon=2.35`;
     try {
       const rep = await fetch(url);
-      const data = await rep.json();
+      const data = await lireJSON(rep);
       if (numero !== requete) return; // une recherche plus récente est en cours
       resultats = (data.features || []).map((f) => ({
         label: f.properties.label,
@@ -167,10 +245,14 @@ function definirPoint(cle, point) {
 }
 
 // Boutons raccourcis "✈ Orly" / "✈ CDG"
+const AEROPORTS_DEFAUT = {
+  orly: { nom: 'Aéroport de Paris-Orly', lat: 48.7262, lon: 2.3652 },
+  cdg: { nom: 'Aéroport Paris-Charles de Gaulle', lat: 49.0097, lon: 2.5479 },
+};
 function brancherRaccourcis() {
   document.querySelectorAll('.puce[data-aeroport]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const a = infos.aeroports[btn.dataset.aeroport];
+      const a = (infos && infos.aeroports[btn.dataset.aeroport]) || AEROPORTS_DEFAUT[btn.dataset.aeroport];
       definirPoint(btn.dataset.cible, {
         label: a.nom,
         postcode: btn.dataset.aeroport === 'orly' ? '94390' : '95700',
@@ -228,7 +310,7 @@ $('form-trajet').addEventListener('submit', async (ev) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ depart: points.depart, arrivee: points.arrivee }),
     });
-    const data = await rep.json();
+    const data = await lireJSON(rep);
     if (!rep.ok) throw new Error(data.erreur);
 
     estimation = data;
@@ -335,7 +417,7 @@ $('form-resa').addEventListener('submit', async (ev) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(donnees),
     });
-    const data = await rep.json();
+    const data = await lireJSON(rep);
     if (!rep.ok) throw new Error(data.erreur);
 
     memoriserClient({ nom: donnees.nom, telephone: donnees.telephone, email: donnees.email });
@@ -365,7 +447,7 @@ function afficherConfirmation(d, r) {
   $('conf-texte').textContent = r.emailEnvoye
     ? `Votre demande m’a bien été transmise et un récapitulatif part à ${d.email}. Je vous confirme la course très rapidement.`
     : 'Votre demande est enregistrée, mais l’e-mail n’a pas pu partir. Envoyez-la sur WhatsApp pour être sûr qu’elle me parvienne.';
-  $('conf-whatsapp').href = `https://wa.me/${infos.entreprise.whatsapp}?text=${encodeURIComponent(message)}`;
+  $('conf-whatsapp').href = `https://wa.me/${(infos && infos.entreprise.whatsapp) || '33613984656'}?text=${encodeURIComponent(message)}`;
 
   $('form-trajet').hidden = true;
   $('resultat').hidden = true;
@@ -397,12 +479,16 @@ function echapper(t) {
 $('annee').textContent = new Date().getFullYear();
 $('date').min = dateDuJour();
 $('date').value = dateDuJour();
+brancherMenu();
+brancherRaccourcis();
 brancherAutocompletion('depart');
 brancherAutocompletion('arrivee');
 prefillClient();
 chargerInfos()
-  .then(brancherRaccourcis)
-  .catch(() => {
-    $('erreur-trajet').textContent = 'Le site rencontre un problème de connexion. Appelez-nous directement.';
+  .catch((err) => {
+    console.error(err);
+    $('erreur-trajet').textContent = err.message.startsWith('Le serveur')
+      ? err.message
+      : 'Le site rencontre un problème de connexion. Appelez-nous directement.';
     $('erreur-trajet').hidden = false;
   });
